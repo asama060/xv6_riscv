@@ -89,3 +89,54 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64 sys_hello(void)
+{
+  int n;
+  argint(0,&n);
+  print_hello(n);
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  int param;
+  
+  argint(0, &param);
+  
+  switch(param) {
+    case 0:
+      return count_active_procs();
+    case 1:
+      return get_total_syscalls() - 1;
+    case 2:
+      return count_free_pages();
+    default:
+      return -1;
+  }
+}
+uint64
+sys_procinfo(void)
+{
+  uint64 info_addr; // User address where struct pinfo will be written
+  struct proc *p = myproc();
+  struct pinfo info;
+  
+  // Get the user pointer from argument
+  argaddr(0, &info_addr);
+  
+  // Check for NULL pointer
+  if(info_addr == 0)
+    return -1;
+  
+  // Fill in the info structure
+  info.ppid = p->parent ? p->parent->pid : -1;
+  info.syscall_count = p->syscall_count - 1; // Subtract this syscall
+  info.page_usage = (p->sz + PGSIZE - 1) / PGSIZE; // Convert bytes to pages, rounded up
+  
+  // Copy the structure back to user space
+  if(copyout(p->pagetable, info_addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  
+  return 0;
+}

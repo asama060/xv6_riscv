@@ -22,7 +22,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-
+int hello(int);  //hello
+int sysinfo(int);  //sysinfo
+int procinfo(void*);//procinfo
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);

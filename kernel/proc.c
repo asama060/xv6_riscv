@@ -123,7 +123,7 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
-  p->state = USED;
+  p->state = USED; 
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -680,4 +680,22 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+void print_hello(int n)
+{
+  printf("Hello from the kernel space %d\n",n);
+}
+
+int
+count_active_procs(void)
+{
+  struct proc *p;
+  int count = 0;
+  
+  for(p = proc; p < &proc[NPROC]; p++) {
+    if(p->state != UNUSED)
+      count++;
+  }
+  
+  return count;
 }
